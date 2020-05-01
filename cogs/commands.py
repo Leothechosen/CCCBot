@@ -1,6 +1,7 @@
 import discord
 import apirequests
 import logging
+from discord.ext import commands
 
 logger = logging.getLogger(f"CCCBot.{__name__}")
 
@@ -11,7 +12,7 @@ class Commands(commands.Cog):
     @commands.group()
     async def cccsearch(self, ctx):
         if ctx.invoked_subcommand is None:
-            await ctxd.send("Subcommands are")
+            await ctx.send("Subcommands are projects and users")
     
     @cccsearch.command()
     async def projects(self, ctx, *, order):
@@ -62,18 +63,30 @@ class Commands(commands.Cog):
 
     @cccsearch.command()
     async def users(self, ctx, *, ccc_user):
-        original_user = ctx.author_id
+        original_user = ctx.author.id
         user_num = 0
         page_num = 1
         msg = None
-        users = await apirequets.ccc_users(ctx, ccc_user, page_num)
+        user_list = await apirequests.ccc_users(ctx, ccc_user, page_num)
         while True:
-            user = users["users"][user_num]
-            embed = discord.Embed(title=f"{user['username']} on CCC", color=0xA9152B, description=f"https://www.castingcall.club{user['user_path']}"")
+            user = user_list["users"][user_num]
+            if user['accents'] == "":
+                accents = "N/A"
+            else:
+                accents = user['accents']
+            if user['languages'] == "":
+                languages = "N/A"
+            else:
+                languages = user['languages']
+            if user['skills'] == "":
+                skills = "N/A"
+            else:
+                skills = user['skills']
+            embed = discord.Embed(title=f"{user['username']} on CCC", color=0xA9152B, description=f"https://www.castingcall.club{user['user_path']}")
             embed.set_thumbnail(url=user["public_audio_url"])
-            embed.add_field(name="Accents", value=user['accents'], inline=True)
-            embed.add_field(name="Languages", value=user['languages', inline=True)
-            embed.add_field(name="Skills", value=user['skills'], inline=True)
+            embed.add_field(name="Accents", value=accents, inline=True)
+            embed.add_field(name="Languages", value=languages, inline=True)
+            embed.add_field(name="Skills", value=skills, inline=True)
             embed.add_field(name=user['demo_name'], value=f"[Link]({user['public_audio_url']})")
             if msg == None:
                 msg = await ctx.send(embed=embed)
@@ -90,10 +103,6 @@ class Commands(commands.Cog):
             elif react.emoji == '❌':
                 await discord.Message.clear_reactions(msg)
                 return
-
-
-
-
 
 async def reaction_check(self, ctx, msg, original_user, project_num):
     try:
