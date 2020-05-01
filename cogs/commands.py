@@ -26,7 +26,7 @@ class Commands(commands.Cog):
         search = await apirequests.ccc_search(ctx, order)
         while True:
             project = search["projects"][project_num]
-            embed = discord.Embed(title=f"Casting Call Club - {project['name']} by {project['username']}", color=0xA9152B, description=f"https://www.castingcall.club/projects/{project['id']}")
+            embed = discord.Embed(title=f"{project['name']} by {project['username']}", color=0xA9152B, description=f"https://www.castingcall.club/projects/{project['id']}")
             embed.set_thumbnail(url=project["public_image_url"])
             embed.add_field(name="# of Roles Available", value=f"{project['roles_available_count']}", inline=True)
             embed.add_field(name="# of Auditions", value=f"{project['auditions_count']}", inline=True)
@@ -59,6 +59,41 @@ class Commands(commands.Cog):
             elif react.emoji == '❌':
                 await discord.Message.clear_reactions(msg)
                 return
+
+    @cccsearch.command()
+    async def users(self, ctx, *, ccc_user):
+        original_user = ctx.author_id
+        user_num = 0
+        page_num = 1
+        msg = None
+        users = await apirequets.ccc_users(ctx, ccc_user, page_num)
+        while True:
+            user = users["users"][user_num]
+            embed = discord.Embed(title=f"{user['username']} on CCC", color=0xA9152B, description=f"https://www.castingcall.club{user['user_path']}"")
+            embed.set_thumbnail(url=user["public_audio_url"])
+            embed.add_field(name="Accents", value=user['accents'], inline=True)
+            embed.add_field(name="Languages", value=user['languages', inline=True)
+            embed.add_field(name="Skills", value=user['skills'], inline=True)
+            embed.add_field(name=user['demo_name'], value=f"[Link]({user['public_audio_url']})")
+            if msg == None:
+                msg = await ctx.send(embed=embed)
+            else:
+                await discord.Message.edit(msg, embed=embed)
+            react = await reaction_check(self, ctx, msg, original_user, user_num)
+            if react == False:
+                return
+            react = react[0]
+            if react.emoji == '➡':
+                user_num += 1
+            elif react.emoji == '⬅️':
+                user_num -= 1
+            elif react.emoji == '❌':
+                await discord.Message.clear_reactions(msg)
+                return
+
+
+
+
 
 async def reaction_check(self, ctx, msg, original_user, project_num):
     try:
