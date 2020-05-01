@@ -1,6 +1,7 @@
 import logging
 import os
 import discord
+from datetime import datetime
 from dotenv import load_dotenv
 from discord.ext import commands
 
@@ -23,7 +24,7 @@ async def on_ready():
 
 @bot.event
 async def on_command(ctx):
-    loggger.info(f"Message: {ctx.message.content} - User: {ctx.message.author}")
+    logger.info(f"Message: {ctx.message.content} - User: {ctx.message.author}")
     bot.startTimer = datetime.now()
     await ctx.trigger_typing()
 
@@ -54,5 +55,9 @@ async def on_guild_join(guild):
 async def on_guild_remove(guild):
     logger.info(f'CCCBot was removed from "{guild.name}" | Guild_ID: {guild.id} | Owner_ID: {guild.owner_id}')
     await bot.get_user(bot.owner_id).send(f'CCCBot was removed from "{guild.name}"\nGuild_ID: {guild.id}\nOwner_ID: {guild.owner_id}')
+
+for filename in os.listdir("./cogs"):
+    if filename.endswith(".py"):
+        bot.load_extension(f"cogs.{filename[:-3]}")
 
 bot.run(TOKEN)
