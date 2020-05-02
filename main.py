@@ -1,6 +1,7 @@
 import logging
 import os
 import discord
+import utils
 from datetime import datetime
 from dotenv import load_dotenv
 from discord.ext import commands
@@ -55,6 +56,42 @@ async def on_guild_join(guild):
 async def on_guild_remove(guild):
     logger.info(f'CCCBot was removed from "{guild.name}" | Guild_ID: {guild.id} | Owner_ID: {guild.owner_id}')
     await bot.get_user(bot.owner_id).send(f'CCCBot was removed from "{guild.name}"\nGuild_ID: {guild.id}\nOwner_ID: {guild.owner_id}')
+
+@bot.event
+async def on_raw_reaction_add(payload):
+    pass
+    try:
+        if payload.message_id != 706011309015171122:
+            return
+        role_reaction = await utils.role_reaction_emojis(str(payload.emoji))
+        role_to_add = await utils.role_reaction_roles(str(role_reaction))
+        guild = bot.get_guild(payload.guild_id)
+        role = guild.get_role(role_to_add)
+        member = guild.get_member(payload.user_id)
+        await member.add_roles(role)
+        if role.name == "Member":
+            roleless_role = await utils.role_reaction_roles("Roleless")
+            roleless_role = guild.get_role(roleless_role)
+            await member.remove_roles(roleless_role)
+    except:
+        logger.exception("Add Role Error")
+
+@bot.event
+async def on_raw_reaction_remove(payload):
+    try:
+        if payload.message_id != 706011309015171122:
+            return
+        if str(payload.emoji) == "✅":
+            return
+        role_reaction = await utils.role_reaction_emojis(str(payload.emoji))
+        role_to_remove = await utils.role_reaction_roles(str(role_reaction))
+        guild = bot.get_guild(payload.guild_id)
+        role = guild.get_role(role_to_remove)
+        member = guild.get_member(payload.user_id)
+        await member.remove_roles(role)
+    except:
+        logger.exception("Remove Role Error")
+        
 
 for filename in os.listdir("./cogs"):
     if filename.endswith(".py"):

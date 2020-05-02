@@ -1,6 +1,7 @@
 import discord
 import apirequests
 import logging
+import utils
 from discord.ext import commands
 
 logger = logging.getLogger(f"CCCBot.{__name__}")
@@ -103,6 +104,24 @@ class Commands(commands.Cog):
             elif react.emoji == '❌':
                 await discord.Message.clear_reactions(msg)
                 return
+    
+    @commands.command(name="sendGetRoles", hidden=True)
+    @commands.is_owner()
+    async def sendGetRoles(self, ctx):
+        emojis = await utils.role_reaction_emojis()
+        embed = discord.Embed(title="Add/Remove a reaction to add/remove the corresponding role", color = 0xA9152B)
+        embed.add_field(name="Voice Type", value=f"Female - {emojis['Female']}\nMale - {emojis['Male']}", inline=True)
+        skills_msg = f"Voice Actor - {emojis['VA']}\nArtist - {emojis['Artist']}\nEditor - {emojis['Editor']}\nAnimator - {emojis['Animator']}\nWriter - {emojis['Writer']}\n"
+        skills_msg+= f"Singer - {emojis['Singer']}\nComposer - {emojis['Composer']}\nDirector - {emojis['Director']}\nGame Dev - {emojis['GameDev']}\nRapper - {emojis['Rapper']}\n"
+        skills_msg+= f"Sound Engineer/Mixer - {emojis['Sound']}"
+        embed.add_field(name="Skills", value=skills_msg, inline=True)
+        #embed.add_field(name="Miscellanous", value=f"Event Notifications - {emojis['Notice']}", inline=True)
+        embed.add_field(name="Server Access", value=f"To get access to the rest of the server, click the ✅ emoji", inline=False)
+        getRolesMsg = await ctx.send(embed=embed)
+        for emoji in emojis:
+            await discord.Message.add_reaction(getRolesMsg, emojis[emoji])
+        return
+
 
 async def reaction_check(self, ctx, msg, original_user, project_num):
     try:
