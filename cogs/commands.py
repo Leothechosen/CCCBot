@@ -83,7 +83,7 @@ class Commands(commands.Cog):
                 skills = "N/A"
             else:
                 skills = user['skills']
-            embed = discord.Embed(title=f"{user['username']} on CCC", color=0xA9152B, description=f"https://www.castingcall.club{user['user_path']}")
+            embed = discord.Embed(title=f"{user['username'].title()} on CCC", color=0xA9152B, description=f"https://www.castingcall.club{user['user_path']}")
             embed.set_thumbnail(url=user["public_audio_url"])
             embed.add_field(name="Accents", value=accents, inline=True)
             embed.add_field(name="Languages", value=languages, inline=True)
