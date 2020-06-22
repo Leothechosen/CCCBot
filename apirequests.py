@@ -1,6 +1,10 @@
 import aiohttp
 import logging
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+cccapikey = os.getenv("CCC_API_KEY")
 logger = logging.getLogger(f"CCCBot.{__name__}")
 
 async def ccc_search(ctx, order):
