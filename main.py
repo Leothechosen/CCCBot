@@ -91,7 +91,12 @@ async def on_raw_reaction_remove(payload):
         await member.remove_roles(role)
     except:
         logger.exception("Remove Role Error")
-        
+
+@bot.event
+async def on_message(message):
+    if "hi" in message.content or "hello" in message.content or "sup" in message.content or "hey" in message.content:
+        await message.add_reaction("👋")
+    await bot.process_commands(message)
 
 for filename in os.listdir("./cogs"):
     if filename.endswith(".py"):
