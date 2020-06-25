@@ -94,7 +94,8 @@ async def on_raw_reaction_remove(payload):
 
 @bot.event
 async def on_message(message):
-    if "hi" in message.content or "hello" in message.content or "sup" in message.content or "hey" in message.content:
+    msg = (message.content).lower().split(" ")
+    if "hi" in msg or "hello" in msg or "sup" in msg or "hey" in msg:
         await message.add_reaction("👋")
     await bot.process_commands(message)
 
